@@ -25,24 +25,17 @@ class GameViewController: UIViewController {
                 view.presentScene(scene)
             }
             
-            //nodes with same zPosition are drawn in the order in which they are added to the scene,
+            //nodes with same zPosition are drawn in the order in which they are added to the scene
             view.ignoresSiblingOrder = false
             
             view.showsFPS = true
             view.showsNodeCount = true
+            view.showsPhysics = true
         }
     }
 
     override var shouldAutorotate: Bool {
         return true
-    }
-
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
-        }
     }
 
     override func didReceiveMemoryWarning() {

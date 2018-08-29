@@ -24,12 +24,22 @@ struct PhysicsCategory {
     static let Bed: UInt32 = 0b100 //4
     static let Edge: UInt32 = 0b1000 //8
     static let Label: UInt32 = 0b10000 //16
+    static let Spring: UInt32 = 0b100000 //32
+    static let Hook: UInt32 = 0b1000000 //64
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var bedNode: BedNode!
     var catNode: CatNode!
     var playable = true
+    var currentLevel: Int = 0
+    
+    class func level(levelNum: Int) -> GameScene? {
+        let scene = GameScene(fileNamed: "Level\(levelNum)")!
+        scene.currentLevel = levelNum
+        scene.scaleMode = .aspectFill
+        return scene
+    }
     
     override func didMove(to view: SKView) {
         //spritekit bug?
@@ -64,6 +74,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Called before each frame is rendered
     }
     
+    override func didSimulatePhysics() {
+        if playable {
+            if fabs(catNode.parent!.zRotation) > CGFloat(25).degreesToRadians() {
+                lose()
+            }
+        }
+    }
+    
     func didBegin(_ contact: SKPhysicsContact) {
         let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         if collision == PhysicsCategory.Label | PhysicsCategory.Edge {
@@ -92,9 +110,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     @objc func newGame() {
-        let scene = GameScene(fileNamed: "GameScene")
-        scene?.scaleMode = scaleMode
-        view?.presentScene(scene)
+        view?.presentScene(GameScene.level(levelNum: currentLevel))
     }
     
     func lose() {
